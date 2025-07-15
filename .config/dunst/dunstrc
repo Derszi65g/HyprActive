@@ -1,0 +1,65 @@
+[global]
+# --- Se añade esta línea para cargar los colores desde el otro archivo ---
+include = "~/.config/dunst/dunstrc-colors"
+
+monitor = 0
+geometry = "350x5-30+50"
+origin = top-right
+offset = 30x50
+
+font = JetBrains Mono Nerd Font 10
+line_height = 0
+format = "<b>%s</b>\n%b"
+
+alignment = left
+vertical_alignment = center
+padding = 12
+horizontal_padding = 12
+corner_radius = 16
+frame_width = 2
+separator_height = 1
+# La línea 'separator_color' se ha movido al archivo de colores
+
+icon_position = left
+max_icon_size = 48
+icon_path = /usr/share/icons/Papirus/48x48/apps/:/usr/share/icons/Papirus/48x48/devices/
+
+startup_notification = false
+dmenu = /usr/bin/dmenu -p "dunst:"
+browser = /usr/bin/xdg-open
+sort = yes
+indicate_hidden = yes
+show_age_threshold = 60
+ignore_newline = no
+follow = mouse
+
+[urgency_low]
+# Las líneas de color se han movido
+timeout = 5
+
+[urgency_normal]
+# Las líneas de color se han movido
+timeout = 10
+
+[urgency_critical]
+# Las líneas de color se han movido
+timeout = 0
+
+# --- Colores generados por Hellwal ---
+[global]
+separator_color = frame
+
+[urgency_low]
+background = "#000201"
+foreground = "#93ffdb"
+frame_color = "#93ffdb"
+
+[urgency_normal]
+background = "#000201"
+foreground = "#93ffdb"
+frame_color = "#93ffdb"
+
+[urgency_critical]
+background = "#5e2d3a"
+foreground = "#f5c2e7"
+frame_color = "#e06c75"
