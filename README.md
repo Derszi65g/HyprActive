@@ -62,7 +62,7 @@ Para que esta configuración funcione correctamente, necesitarás instalar el si
 *   **Notificaciones**: `dunst`
 *   **Capturas de Pantalla**: `grim`, `slurp`
 *   **Portapapeles**: `wl-paste`, `cliphist`
-*   **Utilidades del Sistema**: `thunar`, `brightnessctl`, `pactl`, `zenity`, `power-profiles-daemon`
+*   **Utilidades del Sistema**: `thunar`, `brightnessctl`, `pactl`, `zenity`, `power-profiles-daemon`, `wlr-randr`
 *   **Fuentes**: Se recomienda una fuente Nerd Font (ej. `ttf-jetbrains-mono-nerd`).
 
 # Instalación
@@ -77,7 +77,7 @@ Para que esta configuración funcione correctamente, necesitarás instalar el si
     **Ejemplo en Arch Linux:**
     ```bash
     # Instalar dependencias desde los repositorios oficiales
-    sudo pacman -S hyprland kitty waybar rofi swww dunst grim slurp wl-paste cliphist thunar brightnessctl pactl zenity power-profiles-daemon ttf-jetbrains-mono-nerd
+    sudo pacman -S hyprland kitty waybar rofi swww dunst grim slurp wl-paste cliphist thunar brightnessctl pactl zenity power-profiles-daemon ttf-jetbrains-mono-nerd wlr-randr
 
     # Instalar un ayudante de AUR como paru (si no lo tienes)
     sudo pacman -S --needed base-devel git
