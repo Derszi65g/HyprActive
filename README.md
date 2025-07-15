@@ -62,24 +62,50 @@ Para que esta configuración funcione correctamente, necesitarás instalar el si
 *   **Notificaciones**: `dunst`
 *   **Capturas de Pantalla**: `grim`, `slurp`
 *   **Portapapeles**: `wl-paste`, `cliphist`
-*   **Utilidades del Sistema**: `thunar`, `brightnessctl`, `pactl`, `zenity`, `power-profiles-daemon`, `wlr-randr`
+*   **Utilidades del Sistema**: `thunar`, `brightnessctl`, `pactl`, `zenity`, `power-profiles-daemon`, `wlr-randr`, `jq`
 *   **Fuentes**: Se recomienda una fuente Nerd Font (ej. `ttf-jetbrains-mono-nerd`).
 
 # Instalación
 
+Este repositorio incluye un script de instalación automática que se encarga de todo el proceso: comprobar dependencias, copiarlas y configurar los monitores y el fondo de pantalla inicial.
+
+**Requisitos:**
+*   Una distribución basada en Arch Linux.
+*   Conexión a internet.
+*   Se recomienda tener un ayudante de AUR como `paru` o `yay` instalado para las dependencias de AUR. El script puede intentar instalar `paru` si no lo encuentra.
+
+## Instalación Automática (Recomendado)
+
 1.  **Clona el repositorio:**
     ```bash
-    git clone https://github.com/Derszi65g/HyprActive.git ~/.config/hypr
+    git clone https://github.com/Derszi65g/HyprActive.git
     ```
-2.  **Instala las dependencias:**
-    Usa tu gestor de paquetes para instalar todas las dependencias listadas arriba. `hellwal-git` debe ser instalado desde AUR.
+
+2.  **Ejecuta el script de instalación:**
+    ```bash
+    cd HyprActive
+    chmod +x install.sh
+    ./install.sh
+    ```
+    El script te guiará a través de la instalación de dependencias y la configuración de tus monitores.
+
+3.  **Coloca tus fondos de pantalla** en la carpeta `~/wallhypr` que el script creará por ti.
+
+4.  **¡Reinicia Hyprland y disfruta!**
+
+## Instalación Manual
+
+Si prefieres hacerlo manualmente, sigue estos pasos:
+
+1.  **Instala las dependencias:**
+    Asegúrate de tener todas las dependencias de la lista de abajo.
 
     **Ejemplo en Arch Linux:**
     ```bash
     # Instalar dependencias desde los repositorios oficiales
-    sudo pacman -S hyprland kitty waybar rofi swww dunst grim slurp wl-paste cliphist thunar brightnessctl pactl zenity power-profiles-daemon ttf-jetbrains-mono-nerd wlr-randr
+    sudo pacman -S hyprland kitty waybar rofi swww dunst grim slurp wl-paste cliphist thunar brightnessctl pactl zenity power-profiles-daemon ttf-jetbrains-mono-nerd wlr-randr jq
 
-    # Instalar un ayudante de AUR como paru (si no lo tienes)
+    # Instalar un ayudante de AUR como paru
     sudo pacman -S --needed base-devel git
     git clone https://aur.archlinux.org/paru.git
     cd paru
@@ -90,14 +116,22 @@ Para que esta configuración funcione correctamente, necesitarás instalar el si
     # Instalar hellwal-git usando paru
     paru -S hellwal
     ```
-3.  **Crea los directorios necesarios:**
+
+2.  **Copia los archivos de configuración:**
+    ```bash
+    git clone https://github.com/Derszi65g/HyprActive.git
+    cp -r HyprActive/.config/* ~/.config/
+    ```
+
+3.  **Crea los directorios y copia los fondos:**
     ```bash
     mkdir -p ~/screenshots
     mkdir -p ~/wallhypr
+    cp -r HyprActive/wallhypr/* ~/wallhypr/
     ```
-    Coloca tus fondos de pantalla en `~/wallhypr`.
+4.  **Configura tus monitores** manualmente creando el archivo `~/.config/hypr/source/monitor.conf`.
 
-4.  **¡Reinicia Hyprland y disfruta!**
+5.  **Reinicia Hyprland.**
 
 # Atajos de Teclado
 
