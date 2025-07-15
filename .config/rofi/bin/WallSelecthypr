@@ -1,0 +1,328 @@
+#!/usr/bin/env bash
+
+# --- Configuración ---
+WALLPAPER_DIR="$HOME/wallhypr"
+ROFI_THEME="$HOME/.config/rofi/themes/WallSelecthypr.rasi"
+LAST_WALLPAPER_PATH_FILE="$HOME/.cache/last_wallpaper_path"
+CURRENT_WALLPAPER_LINK="$HOME/.config/current_wallpaper_symlink"
+
+# Configuración de Waybar
+WAYBAR_BASE_CONFIG_DIR="$HOME/.config/waybar"
+WAYBAR_CONFIG_FILE="$WAYBAR_BASE_CONFIG_DIR/config-hypr"
+WAYBAR_THEMES_DIR="$WAYBAR_BASE_CONFIG_DIR/themes"
+WAYBAR_THEMES_BASE_DIR="$WAYBAR_THEMES_DIR/base" # <- NUEVA RUTA
+WAYBAR_THEMES_COLORS_DIR="$WAYBAR_THEMES_DIR/colors" # <- NUEVA RUTA
+WAYBAR_STYLE_SYMLINK="$WAYBAR_BASE_CONFIG_DIR/style.css"
+
+# Configuración de Rofi para el tema dinámico
+ROFI_SHARED_THEMES_DIR="$HOME/.config/rofi/themes/shared"
+
+# Configuración de Dunst
+DUNST_CONFIG_DIR="$HOME/.config/dunst"
+DUNST_BASE_DIR="$DUNST_CONFIG_DIR/base"
+DUNST_FINAL_CONFIG_FILE="$DUNST_CONFIG_DIR/dunstrc"
+
+# Configuración de Kitty
+KITTY_CONFIG_DIR="$HOME/.config/kitty"
+
+# Configuración de Hyprland
+HYPR_SOURCE_DIR="$HOME/.config/hypr/source"
+
+# Configuración de Hellwal
+HELLWAL_TEMPLATES_DIR="$HOME/.config/hellwal/templates"
+HELLWAL_TXT_TEMPLATES_DIR="$HOME/.config/hellwal/templates/txt"
+HELLWAL_CACHE_DIR="$HOME/.cache/hellwal"
+
+# Opciones de Swww
+SWWW_TRANSITION_OPTS=(
+    "--transition-type" "wipe"
+    "--transition-fps" "60"
+    "--transition-duration" "0.7"
+)
+
+# --- Función de Uso y Error ---
+usage() {
+    echo "Uso:"
+    echo "  $0 [-L|-D|-N|-T] <nombre_tema>"
+    echo "  $0 -U [-L|-D|-N|-T]"
+    echo ""
+    echo "Opciones:"
+    echo "  -L : Forzar hellwal a modo CLARO."
+    echo "  -D : Usar hellwal en modo OSCURO (por defecto)."
+    echo "  -U : Usar el nombre del wallpaper como nombre del tema para Waybar y Rofi."
+    echo "  -N : Ejecutar hellwal con '-m' para un esquema de 16 colores."
+    echo "  -T : Ejecutar hellwal con '--skip-term-colors'."
+    exit 1
+}
+
+# --- Procesamiento de Opciones ---
+hellwal_mode="dark"
+use_wallpaper_as_theme=0
+run_hellwal_m=0
+skip_term_colors=0
+waybar_theme_name=""
+
+while [[ "$1" =~ ^- ]]; do
+    case "$1" in
+        -L) hellwal_mode="light"; shift ;;
+        -D) hellwal_mode="dark"; shift ;;
+        -U) use_wallpaper_as_theme=1; shift ;;
+        -N) run_hellwal_m=1; shift ;;
+        -T) skip_term_colors=1; shift ;;
+        *) echo "Error: Opción inválida $1" >&2; usage ;;
+    esac
+done
+
+if [ "$use_wallpaper_as_theme" -eq 0 ]; then
+    if [ -z "$1" ]; then
+        echo "Error: Debe especificar un <nombre_tema> cuando no usa la opción -U." >&2
+        usage
+    fi
+    waybar_theme_name="$1"
+else
+    if [ -n "$1" ]; then
+        echo "Error: No especifique un nombre de tema cuando usa la opción -U." >&2
+        usage
+    fi
+fi
+
+# ... (verificaciones de dependencias omitidas por brevedad) ...
+
+# --- Obtener y Mostrar Wallpapers en Rofi ---
+wallpapers_found=$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.webp" \) | sort)
+if [ -z "$wallpapers_found" ]; then
+    echo "Error: No se encontraron wallpapers en $WALLPAPER_DIR." >&2; exit 1;
+fi
+options=""
+while IFS= read -r file; do
+    filename=$(basename "$file")
+    options+="$filename\x00icon\x1f$file\n"
+done <<< "$wallpapers_found"
+rofi_prompt_theme_name=${waybar_theme_name:-"Wallpaper Name"}
+ORIGINAL_CWD=$(pwd)
+cd "$HOME" || exit 1
+selected_filename=$(echo -e "$options" | rofi -dmenu -p " Wallpapers (${rofi_prompt_theme_name} / ${hellwal_mode^})" -theme "$ROFI_THEME" -theme-str 'element-icon{size: 450px;}' -theme-str 'element-text{horizontal-align: 0.5;}' -format 's')
+cd "$ORIGINAL_CWD" || exit 1
+
+# --- Procesar Selección ---
+if [[ -n "$selected_filename" ]]; then
+
+    wallpaper_path="$WALLPAPER_DIR/$selected_filename"
+
+    # 1. Determinar el nombre base del tema (para Waybar y Rofi)
+    if [ "$use_wallpaper_as_theme" -eq 1 ]; then
+        waybar_theme_name=$(basename "$wallpaper_path" | sed 's/\.[^.]*$//')
+        echo "Modo -U activado. Usando base de tema: ${waybar_theme_name}"
+    fi
+
+    TARGET_WAYBAR_THEME_FILE="$WAYBAR_THEMES_DIR/${waybar_theme_name}.css"
+    # Se elimina la comprobación aquí porque la nueva lógica lo hace innecesario
+
+    echo "Aplicando $selected_filename con tema base '${waybar_theme_name}' y modo Hellwal '${hellwal_mode^}'..."
+
+    # 2. Asegurarse que swww está corriendo
+    swww query >/dev/null || swww init || { echo "Error: swww daemon no pudo iniciarse." >&2; exit 1; }
+    sleep 0.5
+
+    # 3. Guardar ruta y crear symlink al wallpaper
+    echo "$wallpaper_path" > "$LAST_WALLPAPER_PATH_FILE"
+    ln -sf "$wallpaper_path" "$CURRENT_WALLPAPER_LINK"
+
+    # 4. Generar esquema con hellwal
+    echo "Generando esquema de colores con hellwal..."
+    hellwal_cmd=("hellwal" "-i" "$wallpaper_path")
+    [[ "$hellwal_mode" == "light" ]] && hellwal_cmd+=("-l")
+    [[ "$run_hellwal_m" -eq 1 ]] && hellwal_cmd+=("-m")
+    [[ "$skip_term_colors" -eq 1 ]] && hellwal_cmd+=("--skip-term-colors")
+    [ -d "$HELLWAL_TEMPLATES_DIR" ] && hellwal_cmd+=("-f" "$HELLWAL_TEMPLATES_DIR")
+    "${hellwal_cmd[@]}"
+
+    # 5. Gestión inteligente de @import para Waybar (Lógica Antigua)
+    # Esta sección se mantiene como fallback si no se usan las nuevas directivas.
+    echo "Waybar: Buscando directiva @import en '$TARGET_WAYBAR_THEME_FILE'..."
+    if [ -f "$TARGET_WAYBAR_THEME_FILE" ]; then
+        import_line=$(head -n 1 "$TARGET_WAYBAR_THEME_FILE")
+        color_import_file=$(echo "$import_line" | sed -n 's/^\s*@import url(\"\([^\"]*\)\\");\s*$/\1/p')
+        if [ -n "$color_import_file" ]; then
+            HELLWAL_GENERATED_FILE="$HELLWAL_CACHE_DIR/$color_import_file"
+            WAYBAR_COLOR_SYMLINK="$WAYBAR_BASE_CONFIG_DIR/$color_import_file"
+            if [ -f "$HELLWAL_GENERATED_FILE" ]; then
+                echo "Waybar: Creando enlace simbólico para colores (método @import)..."
+                ln -sf "$HELLWAL_GENERATED_FILE" "$WAYBAR_COLOR_SYMLINK"
+            else
+                echo "Advertencia: Hellwal no generó el archivo de colores para Waybar: '$HELLWAL_GENERATED_FILE'." >&2
+            fi
+        else
+            echo "Waybar: No se encontró directiva @import. Saltando enlace de colores."
+        fi
+        # Crear/Actualizar el enlace simbólico para el estilo PRINCIPAL de Waybar
+        echo "Waybar: Configurando tema principal (método antiguo)."
+        ln -sf "$TARGET_WAYBAR_THEME_FILE" "$WAYBAR_STYLE_SYMLINK"
+    else
+        echo "Waybar: Archivo de tema '$TARGET_WAYBAR_THEME_FILE' no encontrado para la lógica antigua."
+    fi
+
+
+    # 6. LÓGICA AMPLIADA: Configuración dinámica mediante archivo de directivas
+    echo "Directivas: Buscando archivo para el tema '${waybar_theme_name}'..."
+    directive_file="$HELLWAL_TXT_TEMPLATES_DIR/${waybar_theme_name}.txt"
+    mkdir -p "$ROFI_SHARED_THEMES_DIR" "$DUNST_CONFIG_DIR" "$DUNST_BASE_DIR" "$KITTY_CONFIG_DIR" "$HYPR_SOURCE_DIR" "$WAYBAR_THEMES_BASE_DIR" "$WAYBAR_THEMES_COLORS_DIR"
+
+    if [ -f "$directive_file" ]; then
+        echo "Directivas: Archivo encontrado en '$directive_file'. Procesando..."
+
+        dunst_colors_template=""
+        dunst_base_template=""
+
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            if [[ -z "$line" ]] || [[ "$line" =~ ^\s*# ]]; then continue; fi
+            key=$(echo "$line" | cut -d'=' -f1 | tr -d '[:space:]' | sed 's/\s.*$//' | tr '[:lower:]' '[:upper:]' | head -c 1)$(echo "$line" | cut -d'=' -f1 | tr -d '[:space:]' | sed 's/\s.*$//' | tr '[:upper:]' '[:lower:]' | tail -c +2)
+            value=$(echo "$line" | cut -d'=' -f2 | sed 's/^\s*//' | sed 's/\s*$//')
+
+            if [ -z "$key" ] || [ -z "$value" ]; then
+                echo "Advertencia: Línea mal formada en '$directive_file': $line" >&2
+                continue
+            fi
+
+            case "$key" in
+                Launcher|Powermenu|Clipboard)
+                    key_lower=$(echo "$key" | tr '[:upper:]' '[:lower:]')
+                    value_base=$(echo "$value" | sed 's/\.rasi$//')
+                    target_symlink_name=""
+                    if [[ "$key_lower" == "launcher" ]]; then target_symlink_name="colorshypr.rasi"; fi
+                    if [[ "$key_lower" == "powermenu" ]]; then target_symlink_name="power.rasi"; fi
+                    if [[ "$key_lower" == "clipboard" ]]; then target_symlink_name="clipboard.rasi"; fi
+
+                    source_rasi_file="$HELLWAL_CACHE_DIR/${value_base}.rasi"
+                    target_symlink_path="$ROFI_SHARED_THEMES_DIR/$target_symlink_name"
+
+                    if [ -f "$source_rasi_file" ]; then
+                        echo "Rofi: Enlazando ($key_lower): '$target_symlink_path' -> '$source_rasi_file'"
+                        ln -sf "$source_rasi_file" "$target_symlink_path"
+                    else
+                        echo "Advertencia: Hellwal no generó el archivo de Rofi especificado para '$key_lower': '$source_rasi_file'." >&2
+                    fi
+                    ;;
+                Waybarbase) # <--- NUEVA DIRECTIVA
+                    source_waybar_base_file="$WAYBAR_THEMES_BASE_DIR/$value"
+                    if [ -f "$source_waybar_base_file" ]; then
+                        echo "Waybar (Base): Enlazando '$WAYBAR_STYLE_SYMLINK' -> '$source_waybar_base_file'"
+                        ln -sf "$source_waybar_base_file" "$WAYBAR_STYLE_SYMLINK"
+                    else
+                        echo "Advertencia (Waybar): No se encontró el archivo base '$source_waybar_base_file'." >&2
+                    fi
+                    ;;
+                Waycolor) # <--- NUEVA DIRECTIVA
+                    colors_definition_file="$WAYBAR_THEMES_COLORS_DIR/colors.txt"
+                    if [ -f "$colors_definition_file" ]; then
+                        # Buscar la línea que coincide con el valor de Waycolor
+                        target_css_name=$(grep -E "^\s*${value}\s*=" "$colors_definition_file" | cut -d'=' -f2 | sed 's/^\s*//' | sed 's/\s*$//')
+
+                        if [ -n "$target_css_name" ]; then
+                            source_color_file="$HELLWAL_CACHE_DIR/$target_css_name"
+                            target_color_symlink="$WAYBAR_BASE_CONFIG_DIR/colors.css"
+                            if [ -f "$source_color_file" ]; then
+                                echo "Waybar (Color): Enlazando '$target_color_symlink' -> '$source_color_file'"
+                                ln -sf "$source_color_file" "$target_color_symlink"
+                            else
+                                echo "Advertencia (Waybar): Hellwal no generó el archivo de color '$source_color_file'." >&2
+                            fi
+                        else
+                            echo "Advertencia (Waybar): No se encontró la definición para '$value' en '$colors_definition_file'." >&2
+                        fi
+                    else
+                        echo "Advertencia (Waybar): No se encontró el archivo de definición de colores '$colors_definition_file'." >&2
+                    fi
+                    ;;
+                Dunst)
+                    dunst_colors_template="$value"
+                    ;;
+                Dunstbase)
+                    dunst_base_template="$value"
+                    ;;
+                Kitty)
+                    source_kitty_file="$HELLWAL_CACHE_DIR/$value"
+                    target_kitty_symlink="$KITTY_CONFIG_DIR/kitty.conf"
+                    if [ -f "$source_kitty_file" ]; then
+                        echo "Kitty: Enlazando configuración: '$target_kitty_symlink' -> '$source_kitty_file'"
+                        ln -sf "$source_kitty_file" "$target_kitty_symlink"
+                    else
+                        echo "Advertencia (Kitty): Hellwal no generó el archivo de configuración especificado: '$source_kitty_file'." >&2
+                    fi
+                    ;;
+                Border)
+                    target_filename=$(echo "$key" | tr '[:upper:]' '[:lower:]').conf
+                    source_file="$HELLWAL_CACHE_DIR/$value"
+                    target_symlink="$HYPR_SOURCE_DIR/$target_filename"
+
+                    if [ -f "$source_file" ]; then
+                        echo "Hyprland ($key): Enlazando '$target_symlink' -> '$source_file'"
+                        ln -sf "$source_file" "$target_symlink"
+                    else
+                        echo "Advertencia (Hyprland): Hellwal no generó el archivo para '$key': '$source_file'." >&2
+                    fi
+                    ;;
+                *)
+                    echo "Advertencia: Clave desconocida '$key' en '$directive_file'. Saltando." >&2
+                    ;;
+            esac
+        done < "$directive_file"
+
+        # Procesar Dunst
+        if [ -n "$dunst_colors_template" ] && [ -n "$dunst_base_template" ]; then
+            echo "Dunst: Procesando directivas 'dunst' y 'dunstbase'..."
+            source_base_file="$DUNST_BASE_DIR/$dunst_base_template"
+            source_colors_file="$HELLWAL_CACHE_DIR/$dunst_colors_template"
+
+            if [ -f "$source_base_file" ] && [ -f "$source_colors_file" ]; then
+                echo "Dunst: Creando archivo de configuración final en '$DUNST_FINAL_CONFIG_FILE'..."
+                cat "$source_base_file" > "$DUNST_FINAL_CONFIG_FILE"
+                echo -e "\n# --- Colores generados por Hellwal ---" >> "$DUNST_FINAL_CONFIG_FILE"
+                cat "$source_colors_file" >> "$DUNST_FINAL_CONFIG_FILE"
+            else
+                [ ! -f "$source_base_file" ] && echo "Advertencia (Dunst): No se encontró el archivo base '$source_base_file'." >&2
+                [ ! -f "$source_colors_file" ] && echo "Advertencia (Dunst): Hellwal no generó el archivo de colores '$source_colors_file'." >&2
+            fi
+        elif [ -n "$dunst_colors_template" ] || [ -n "$dunst_base_template" ]; then
+            echo "Advertencia (Dunst): Se encontró la directiva 'dunst' o 'dunstbase', pero no ambas. Se requieren las dos para configurar Dunst." >&2
+        fi
+
+    else
+        echo "Directivas: No se encontró archivo. Usando lógica de enlace simple para Rofi (fallback)."
+        HELLWAL_ROFI_FILE="$HELLWAL_CACHE_DIR/${waybar_theme_name}.rasi"
+        ROFI_COLORS_SYMLINK="$ROFI_SHARED_THEMES_DIR/colorshypr.rasi"
+        if [ -f "$HELLWAL_ROFI_FILE" ]; then
+            echo "Rofi: Creando enlace simbólico (fallback): $ROFI_COLORS_SYMLINK -> $HELLWAL_ROFI_FILE"
+            ln -sf "$HELLWAL_ROFI_FILE" "$ROFI_COLORS_SYMLINK"
+        else
+            echo "Advertencia: Hellwal no generó el archivo de tema para Rofi esperado en '$HELLWAL_ROFI_FILE'." >&2
+        fi
+    fi
+
+    # 7. Establecer wallpaper y reiniciar servicios
+    echo "Aplicando cambios y reiniciando servicios..."
+    swww img "$wallpaper_path" "${SWWW_TRANSITION_OPTS[@]}"
+    hyprctl reload
+    pkill waybar
+    sleep 0.3
+    # Nota: El script de reinicio de Waybar original fue modificado para reflejar la nueva estructura
+    # Ahora asume que style.css importa colors.css
+    waybar -c "$WAYBAR_CONFIG_FILE" &
+
+    # Reiniciar Dunst si está instalado
+    if command -v dunst &> /dev/null; then
+        pkill dunst
+        sleep 0.1
+        dunst &
+    fi
+
+    # Recargar configuración de Kitty si el comando 'kitty' está disponible
+    if command -v kitty &> /dev/null; then
+        kitty @ set-colors --all --configured "$KITTY_CONFIG_DIR/kitty.conf"
+    fi
+
+    echo "Proceso completado."
+
+else
+    echo "Selección de wallpaper cancelada."
+fi

@@ -1,0 +1,2 @@
+dark = wadark.css
+bocchi = bocchi.css

@@ -1,0 +1,107 @@
+configuration {
+    show-icons:                 true;
+    icon-theme:                 "Papirus";
+    font:                       "Noto Sans Bold 20";
+    me-select-entry:            "";
+    me-accept-entry:            "MousePrimary";
+}
+
+@import                          "shared/power.rasi"
+
+* {
+    font:                        "Noto Sans 11";
+    background-color:            transparent;
+}
+
+window {
+    /* --- CAMBIOS APLICADOS AQUÍ --- */
+    /* 1. Transparencia eliminada */
+    /* 2. Borde separado en dos propiedades para mayor compatibilidad */
+    border:                      2px;
+    border-color:                @fg-col;
+
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       320px;
+    x-offset:                    0px;
+    y-offset:                    0px;
+    border-radius:               25px;
+    padding:                     30px 25px;
+    cursor:                      "default";
+    background-color:            @bg-col;
+}
+
+mainbox {
+    spacing:                     0px;
+    orientation:                 vertical;
+    children:                    [ "inputbar", "listview" ];
+}
+
+inputbar {
+    spacing:                     0px;
+    padding:                     0px 0px 25px 0px;
+    background-color:            transparent;
+    text-color:                  @fg-col;
+    font:                        inherit;
+    children:                    [ "prompt" ];
+}
+
+prompt {
+    background-color:            transparent;
+    text-color:                  inherit;
+    font:                        inherit;
+    horizontal-align:            0.5;
+}
+
+listview {
+    columns:                     1;
+    lines:                       4;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+
+    spacing:                     12px;
+    background-color:            transparent;
+    text-color:                  @fg-alt-col;
+    cursor:                      "default";
+}
+
+element {
+    spacing:                     15px;
+    padding:                     12px 18px;
+    border-radius:               18px;
+    background-color:            @bg-alt-col;
+    text-color:                  @fg-alt-col;
+    orientation:                 horizontal;
+    cursor:                      pointer;
+}
+
+element selected {
+    background-color:            @selected-bg-col;
+    text-color:                  @selected-fg-col;
+}
+
+element-icon {
+    background-color:            @icon-base-bg;
+    text-color:                  inherit;
+    size:                        24px;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    padding:                     8px;
+    border-radius:               50%;
+    cursor:                      inherit;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    highlight:                   bold;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+}

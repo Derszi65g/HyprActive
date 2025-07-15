@@ -1,0 +1,166 @@
+@import url("colors.css");
+#workspaces button {
+    background-color: transparent;
+    color: @foreground;
+    padding: 0px 8px;
+    margin: 1px 1px;
+    border-radius: 7px;
+    min-width: 16px;
+    min-height: 14px;
+    opacity: 0.8;
+}
+
+#workspaces button:hover {
+    background-color: alpha(@primary, 0.3);
+    color: @foreground;
+    opacity: 1;
+    box-shadow: inherit;
+    border: none;
+    text-shadow: inherit;
+}
+
+#workspaces button.active {
+    background-color: @primary;
+    color: @background_original;
+    opacity: 1;
+}
+
+#workspaces button.visible,
+#workspaces button.visible.active {
+    background-color: @primary;
+    color: @background_original;
+    opacity: 1;
+}
+
+#workspaces button.urgent {
+    background-color: @red;
+    color: @background_original;
+    opacity: 1;
+}
+
+#workspaces button.special {
+    background-color: alpha(@yellow, 0.5);
+    color: @background_original;
+    opacity: 1;
+}
+/* Hover sobre workspace especial */
+#workspaces button.special:hover {
+    background-color: alpha(@yellow, 0.8);
+    color: @background_original;
+}
+
+#workspaces button.empty {
+    color: alpha(@foreground, 0.5);
+    background-color: transparent;
+    opacity: 0.5;
+}
+/* Hover sobre workspace vacío */
+#workspaces button.empty:hover {
+    color: @foreground;
+    background-color: alpha(@primary, 0.2);
+    opacity: 0.8;
+}
+
+* {
+    font-family:
+        "JetBrainsMono Nerd Font", "hack Nerd Font", FontAwesome, sans-serif;
+    font-size: 10px;
+    font-weight: normal;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
+    transition-duration: 0s;
+    color: @foreground;
+}
+
+window#waybar {
+    background-color: @background_rgba;
+    color: @foreground;
+}
+
+#custom-launcher,
+#cpu,
+#memory,
+#workspaces,
+#backlight,
+#clock,
+#temperature,
+#pulseaudio,
+#battery,
+#tray,
+#custom-cpu-power {
+    background-color: @background_alt_rgba;
+    color: @foreground;
+    padding: 1px 10px;
+    margin: 2px 3px;
+    border-radius: 10px;
+    min-height: 12px;
+    border: 2px solid @foreground;
+}
+
+#custom-launcher {
+    color: @foreground;
+    font-size: 12px;
+    padding: 1px 8px;
+}
+
+#clock {
+}
+
+#temperature.critical {
+    color: @red;
+}
+
+#pulseaudio.muted {
+    color: @red;
+}
+
+@keyframes battery-charging-fill {
+    0% {
+        background-size: 0% 100%;
+    }
+    100% {
+        background-size: 100% 100%;
+    }
+}
+
+#battery.charging {
+    color: @background_original;
+    background-image: linear-gradient(to right, @green, @green);
+    background-repeat: no-repeat;
+    background-position: left center;
+    animation-name: battery-charging-fill;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+#battery.warning {
+    color: @yellow;
+}
+
+#battery.critical {
+    color: @red;
+}
+
+#battery.full {
+    animation: none;
+    background-image: none;
+    color: @green;
+}
+#battery.charging.full {
+    animation: none;
+    background-image: none;
+    color: @green;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: @red;
+    border-radius: 6px;
+}

@@ -1,0 +1,117 @@
+/* --- clipboard.rasi (Versión Corregida) --- */
+
+configuration {
+    show-icons:                 true;
+    font:                       "Hack Nerd Font 12"; /* <-- IMPORTANTE: Usa tu Nerd Font aquí */
+    me-select-entry:            "";
+    me-accept-entry:            "MousePrimary";
+}
+
+/*
+  Este archivo asume que se está importando otro .rasi
+  que define las variables de color como:
+  @bg-col, @fg-col, @bg-alt-col, @icon-base-bg, etc.
+*/
+@import                          "shared/clipboard.rasi"
+
+* {
+    font:                        inherit;
+    background-color:            transparent;
+}
+
+window {
+    border:                      2px;
+    border-color:                @fg-col;
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       480px;
+    x-offset:                    0px;
+    y-offset:                    0px;
+    border-radius:               25px;
+    padding:                     30px 25px;
+    cursor:                      "default";
+    background-color:            @bg-col;
+}
+
+mainbox {
+    spacing:                     0px;
+    orientation:                 vertical;
+    children:                    [ "inputbar", "listview" ];
+}
+
+inputbar {
+    spacing:                     0px;
+    padding:                     0px 0px 25px 0px;
+    background-color:            transparent;
+    text-color:                  @fg-col;
+    children:                    [ "prompt" ];
+}
+
+prompt {
+    background-color:            transparent;
+    text-color:                  inherit;
+    horizontal-align:            0.5;
+}
+
+listview {
+    columns:                     1;
+    lines:                       4;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    spacing:                     12px;
+    background-color:            transparent;
+    cursor:                      "default";
+}
+
+element {
+    spacing:                     15px;
+    padding:                     12px 18px;
+    border-radius:               18px;
+    background-color:            @bg-alt-col;
+    text-color:                  @fg-alt-col;
+    orientation:                 horizontal;
+    cursor:                      pointer;
+    children:                    [ "element-icon", "element-text" ];
+}
+
+element selected {
+    background-color:            @selected-bg-col;
+    text-color:                  @selected-fg-col;
+}
+
+element-icon {
+    font:                        "Hack Nerd Font 16";
+
+    /* --- LA CORRECCIÓN CLAVE ESTÁ AQUÍ --- */
+    background-color:            @icon-base-bg; /* Fondo del círculo: #81f4ac (verde claro) */
+    text-color:                  @bg-col;       /* Color del icono: #020202 (oscuro) */
+
+    size:                        28px;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    padding:                     10px;
+    border-radius:               100%;
+    cursor:                      inherit;
+}
+
+element selected element-icon {
+    /* Mantenemos el fondo del círculo igual de claro */
+    background-color:            @icon-base-bg;
+    /* Pero el icono se tiñe del color de fondo de la selección para integrarse */
+    text-color:                  @selected-bg-col;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    highlight:                   bold;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+}

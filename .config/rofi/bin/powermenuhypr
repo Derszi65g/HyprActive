@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# -- Modificamos el comando de Rofi para que acepte iconos --
+rofi_command="rofi -theme $HOME/.config/rofi/themes/powermenu.rasi -show-icons"
+
+uptime=$(uptime -p | sed -e 's/up //g')
+
+# --- Opciones ---
+# Usamos el formato "Texto a mostrar\0icon\x1fnombre-del-icono"
+# Rofi buscará estos iconos en tu tema de iconos (Papirus)
+suspend="Sleep\0icon\x1fweather-clear-night-symbolic"
+logout="Logout\0icon\x1fsystem-log-out-symbolic"
+reboot="Restart\0icon\x1fsystem-reboot-symbolic"
+shutdown="Shutdown\0icon\x1fsystem-shutdown-symbolic"
+
+# Variable que pasamos a rofi
+options="$suspend\n$logout\n$reboot\n$shutdown"
+
+chosen="$(echo -e "$options" | $rofi_command -p "UP - $uptime" -dmenu -selected-row 0)"
+
+# -- NOTA: He cambiado el texto en el case para que coincida con las nuevas opciones --
+#    Ahora compara solo con el texto ("Sleep", "Logout", etc.)
+case ${chosen%%\\0*} in
+    "Shutdown")
+        systemctl poweroff
+        ;;
+    "Restart")
+        systemctl reboot
+        ;;
+    "Sleep")
+        # Es buena práctica bloquear la pantalla antes de suspender
+        # Asegúrate de que tienes un script de bloqueo en ~/.local/bin/lock
+        # si no, puedes usar otro comando como `i3lock` o `swaylock`.
+        ~/.local/bin/lock && systemctl suspend
+        ;;
+    "Logout")
+        # Una forma más sencilla y robusta de cerrar la sesión del usuario actual
+        loginctl terminate-user "$(whoami)"
+        ;;
+esac
