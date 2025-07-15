@@ -58,7 +58,7 @@ Para que esta configuración funcione correctamente, necesitarás instalar el si
 *   **Compositor y Shell**: `hyprland`, `kitty`
 *   **Barra de Estado**: `waybar`
 *   **Lanzador y Menús**: `rofi`
-*   **Gestor de Fondos y Theming**: `swww`, `hellwal` (o `pywal`)
+*   **Gestor de Fondos y Theming**: `swww`, `hellwal-git` (desde AUR)
 *   **Notificaciones**: `dunst`
 *   **Capturas de Pantalla**: `grim`, `slurp`
 *   **Portapapeles**: `wl-paste`, `cliphist`
@@ -72,9 +72,23 @@ Para que esta configuración funcione correctamente, necesitarás instalar el si
     git clone https://github.com/Derszi65g/HyprActive.git ~/.config/hypr
     ```
 2.  **Instala las dependencias:**
-    Usa tu gestor de paquetes para instalar todas las dependencias listadas arriba. Por ejemplo, en Arch Linux:
+    Usa tu gestor de paquetes para instalar todas las dependencias listadas arriba. `hellwal-git` debe ser instalado desde AUR.
+
+    **Ejemplo en Arch Linux:**
     ```bash
-    sudo pacman -S hyprland kitty waybar rofi swww pywal dunst grim slurp wl-paste cliphist thunar brightnessctl pactl zenity power-profiles-daemon ttf-jetbrains-mono-nerd
+    # Instalar dependencias desde los repositorios oficiales
+    sudo pacman -S hyprland kitty waybar rofi swww dunst grim slurp wl-paste cliphist thunar brightnessctl pactl zenity power-profiles-daemon ttf-jetbrains-mono-nerd
+
+    # Instalar un ayudante de AUR como paru (si no lo tienes)
+    sudo pacman -S --needed base-devel git
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si
+    cd ..
+    rm -rf paru
+
+    # Instalar hellwal-git usando paru
+    paru -S hellwal
     ```
 3.  **Crea los directorios necesarios:**
     ```bash
