@@ -9,8 +9,11 @@ CURRENT_WALLPAPER_LINK="$HOME/.config/current_wallpaper_symlink"
 # Configuración de Waybar
 WAYBAR_BASE_CONFIG_DIR="$HOME/.config/waybar"
 WAYBAR_CONFIG_FILE="$WAYBAR_BASE_CONFIG_DIR/config-hypr"
-WAYBAR_THEMES_BASE_DIR="$WAYBAR_BASE_CONFIG_DIR/base"
-WAYBAR_THEMES_COLORS_DIR="$WAYBAR_BASE_CONFIG_DIR/colors"
+# --- LÍNEAS CORREGIDAS ---
+# Ahora se busca y se crean los temas dentro de una carpeta 'themes' para mejor organización.
+WAYBAR_THEMES_BASE_DIR="$WAYBAR_BASE_CONFIG_DIR/themes/base"
+WAYBAR_THEMES_COLORS_DIR="$WAYBAR_BASE_CONFIG_DIR/themes/colors"
+# -------------------------
 WAYBAR_STYLE_SYMLINK="$WAYBAR_BASE_CONFIG_DIR/style.css"
 
 # Configuración de Rofi para el tema dinámico
