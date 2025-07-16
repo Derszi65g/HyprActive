@@ -106,14 +106,14 @@ Este repositorio incluye un script de instalación automática que se encarga de
 Si prefieres hacerlo manualmente, sigue estos pasos:
 
 1.  **Instala las dependencias:**
-    Asegúrate de tener todas las dependencias de la lista de abajo.
+    Asegúrate de tener todas las dependencias de la [lista principal](#dependencias) instaladas.
 
     **Ejemplo en Arch Linux:**
     ```bash
     # Instalar dependencias desde los repositorios oficiales
-    sudo pacman -S hyprland kitty waybar rofi swww dunst grim slurp wl-paste cliphist thunar brightnessctl pactl zenity power-profiles-daemon ttf-jetbrains-mono-nerd wlr-randr jq
+    sudo pacman -S hyprland kitty waybar rofi swww dunst grim slurp wl-clipboard cliphist thunar brightnessctl libpulse zenity power-profiles-daemon ttf-jetbrains-mono-nerd wlr-randr jq xdg-desktop-portal-hyprland
 
-    # Instalar un ayudante de AUR como paru
+    # Instalar un ayudante de AUR (ej. paru) si no lo tienes
     sudo pacman -S --needed base-devel git
     git clone https://aur.archlinux.org/paru.git
     cd paru
@@ -121,7 +121,7 @@ Si prefieres hacerlo manualmente, sigue estos pasos:
     cd ..
     rm -rf paru
 
-    # Instalar hellwal-git usando paru
+    # Instalar dependencias de AUR usando paru
     paru -S hellwal
     ```
 
