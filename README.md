@@ -4,8 +4,6 @@ Una configuración de Hyprland altamente personalizada y dinámica, centrada en 
 
 # Screenshots
 
-<details><summary><h2>Escritorio</h2></summary>
-
 ![](/assets/screenshot-desktop.png)
 
 </details><br>
