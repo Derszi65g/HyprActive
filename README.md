@@ -4,33 +4,25 @@ Una configuración de Hyprland altamente personalizada y dinámica, centrada en 
 
 # Screenshots
 
+## Escritorio
+
 ![](/assets/screenshot-desktop.png)
 
-</details><br>
-
-<details><summary><h2>Lanzador de Aplicaciones (Rofi)</h2></summary>
+## Lanzador de Aplicaciones (Rofi)
 
 ![](/assets/screenshot-rofi-launcher.png)
 
-</details><br>
-
-<details><summary><h2>Selector de Fondos de Pantalla</h2></summary>
+## Selector de Fondos de Pantalla
 
 ![](/assets/screenshot-wallselector.png)
 
-</details><br>
-
-<details><summary><h2>Menú de Apagado (Rofi)</h2></summary>
+## Menú de Apagado (Rofi)
 
 ![](/assets/screenshot-powermenu.png)
 
-</details><br>
-
-<details><summary><h2>Modo Juego</h2></summary>
+## Modo Juego
 
 ![](/assets/screenshot-gaming-mode.png)
-
-</details><br>
 
 # Características Principales
 
