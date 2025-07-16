@@ -43,17 +43,35 @@ Una configuración de Hyprland altamente personalizada y dinámica, centrada en 
 
 # Dependencias
 
-Para que esta configuración funcione correctamente, necesitarás instalar el siguiente software:
+Para que esta configuración funcione correctamente, necesitarás instalar los siguientes paquetes. El script de instalación (`install.sh`) está diseñado para manejarlos automáticamente usando `paru`.
 
-*   **Compositor y Shell**: `hyprland`, `kitty`
-*   **Barra de Estado**: `waybar`
-*   **Lanzador y Menús**: `rofi`
-*   **Gestor de Fondos y Theming**: `swww`, `hellwal-git` (desde AUR)
-*   **Notificaciones**: `dunst`
-*   **Capturas de Pantalla**: `grim`, `slurp`
-*   **Portapapeles**: `wl-paste`, `cliphist`
-*   **Utilidades del Sistema**: `thunar`, `brightnessctl`, `pactl`, `zenity`, `power-profiles-daemon`, `wlr-randr`, `jq`
-*   **Fuentes**: Se recomienda una fuente Nerd Font (ej. `ttf-jetbrains-mono-nerd`).
+*   **Entorno de Escritorio**:
+    *   `hyprland`: El compositor de Wayland.
+    *   `xdg-desktop-portal-hyprland`: Portal de escritorio para integración de aplicaciones.
+*   **Terminal y Shell**:
+    *   `kitty`: Emulador de terminal acelerado por GPU.
+*   **Interfaz de Usuario**:
+    *   `waybar`: Barra de estado altamente personalizable.
+    *   `rofi`: Lanzador de aplicaciones y menús.
+    *   `dunst`: Demonio de notificaciones.
+*   **Theming y Visuales**:
+    *   `swww`: Gestor de fondos de pantalla para Wayland.
+    *   `hellwal`: Herramienta para generar esquemas de color desde el fondo de pantalla (AUR).
+    *   `ttf-jetbrains-mono-nerd`: Fuente con iconos (Nerd Font).
+*   **Utilidades del Sistema**:
+    *   `thunar`: Gestor de archivos.
+    *   `brightnessctl`: Control del brillo de la pantalla.
+    *   `libpulse`: Proporciona `pactl` para el control del volumen.
+    *   `power-profiles-daemon`: Gestión de perfiles de energía.
+    *   `zenity`: Creación de diálogos gráficos simples.
+*   **Capturas y Portapapeles**:
+    *   `grim`: Herramienta para capturas de pantalla en Wayland.
+    *   `slurp`: Utilidad para seleccionar regiones en Wayland.
+    *   `wl-clipboard`: Proporciona `wl-paste` y `wl-copy` para el portapapeles.
+    *   `cliphist`: Historial del portapapeles para Wayland.
+*   **Herramientas Adicionales**:
+    *   `jq`: Procesador de JSON de línea de comandos.
+    *   `wlr-randr`: Herramienta para configurar salidas (monitores) en wlroots.
 
 # Instalación
 
