@@ -9,11 +9,8 @@ CURRENT_WALLPAPER_LINK="$HOME/.config/current_wallpaper_symlink"
 # Configuración de Waybar
 WAYBAR_BASE_CONFIG_DIR="$HOME/.config/waybar"
 WAYBAR_CONFIG_FILE="$WAYBAR_BASE_CONFIG_DIR/config-hypr"
-# --- LÍNEAS CORREGIDAS ---
-# Ahora se busca y se crean los temas dentro de una carpeta 'themes' para mejor organización.
 WAYBAR_THEMES_BASE_DIR="$WAYBAR_BASE_CONFIG_DIR/themes/base"
 WAYBAR_THEMES_COLORS_DIR="$WAYBAR_BASE_CONFIG_DIR/themes/colors"
-# -------------------------
 WAYBAR_STYLE_SYMLINK="$WAYBAR_BASE_CONFIG_DIR/style.css"
 
 # Configuración de Rofi para el tema dinámico
@@ -189,7 +186,10 @@ if [[ -n "$selected_filename" ]]; then
     fi
 
     echo "Directivas: Archivo encontrado en '$directive_file'. Procesando..."
-    dunst_colors_template=""; dunst_base_template=""
+    declare -a auto_commands=() # Usamos un array para almacenar los comandos 'auto'
+    dunst_colors_template=""
+    dunst_base_template=""
+
     while IFS= read -r line || [[ -n "$line" ]]; do
         if [[ -z "$line" ]] || [[ "$line" =~ ^\s*# ]]; then continue; fi
         key=$(echo "$line" | cut -d'=' -f1 | tr -d '[:space:]' | sed 's/\s.*$//' | tr '[:lower:]' '[:upper:]' | head -c 1)$(echo "$line" | cut -d'=' -f1 | tr -d '[:space:]' | sed 's/\s.*$//' | tr '[:upper:]' '[:lower:]' | tail -c +2)
@@ -198,6 +198,10 @@ if [[ -n "$selected_filename" ]]; then
             echo "Advertencia: Línea mal formada en '$directive_file': $line" >&2; continue;
         fi
         case "$key" in
+            Auto)
+                echo "Auto: Comando en cola -> '$value'"
+                auto_commands+=("$value")
+                ;;
             Launcher|Powermenu|Clipboard)
                 key_lower=$(echo "$key" | tr '[:upper:]' '[:lower:]'); value_base=$(echo "$value" | sed 's/\.rasi$//'); target_symlink_name=""
                 if [[ "$key_lower" == "launcher" ]]; then target_symlink_name="colorshypr.rasi"; fi; if [[ "$key_lower" == "powermenu" ]]; then target_symlink_name="power.rasi"; fi; if [[ "$key_lower" == "clipboard" ]]; then target_symlink_name="clipboard.rasi"; fi
@@ -226,6 +230,7 @@ if [[ -n "$selected_filename" ]]; then
             *) echo "Advertencia: Clave desconocida '$key' en '$directive_file'. Saltando." >&2 ;;
         esac
     done < "$directive_file"
+
     if [ -n "$dunst_colors_template" ] && [ -n "$dunst_base_template" ]; then
         echo "Dunst: Procesando directivas 'dunst' y 'dunstbase'..."
         source_base_file="$DUNST_BASE_DIR/$dunst_base_template"; source_colors_file="$HELLWAL_CACHE_DIR/$dunst_colors_template"
@@ -240,7 +245,18 @@ if [[ -n "$selected_filename" ]]; then
         echo "Advertencia (Dunst): Se encontró la directiva 'dunst' o 'dunstbase', pero no ambas." >&2;
     fi
 
-    # --- SECCIÓN DE REINICIO CORREGIDA ---
+    # --- Ejecución de comandos 'auto' ---
+    if [ ${#auto_commands[@]} -gt 0 ]; then
+        echo "Ejecutando ${#auto_commands[@]} comando(s) 'auto' en cola..."
+        for cmd in "${auto_commands[@]}"; do
+            echo "-> Exec: $cmd"
+            # Usamos 'eval' para interpretar ~, redirecciones, etc. y manejamos errores.
+            eval "$cmd" || echo "Advertencia: El comando 'auto' falló con un error: $cmd" >&2
+            sleep 0.2 # Pequeña pausa para evitar saturación.
+        done
+    fi
+
+    # --- SECCIÓN DE REINICIO ---
     echo "Aplicando cambios y reiniciando servicios..."
     swww img "$wallpaper_path" "${SWWW_TRANSITION_OPTS[@]}"
     hyprctl reload

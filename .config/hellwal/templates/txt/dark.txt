@@ -7,3 +7,4 @@ kitty = kitty.conf
 Border = border.conf
 Waybarbase = dark.css
 Waycolor = dark
+auto = fish -c "source ~/.cache/hellwal/config.fish"
