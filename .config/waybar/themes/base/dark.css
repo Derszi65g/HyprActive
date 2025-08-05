@@ -1,4 +1,5 @@
 @import url("colors.css");
+
 #workspaces button {
     background-color: transparent;
     color: @foreground;
@@ -9,56 +10,19 @@
     min-height: 14px;
     opacity: 0.8;
 }
-
 #workspaces button:hover {
     background-color: alpha(@primary, 0.3);
     color: @foreground;
     opacity: 1;
-    box-shadow: inherit;
-    border: none;
-    text-shadow: inherit;
 }
-
 #workspaces button.active {
     background-color: @primary;
     color: @background_original;
     opacity: 1;
 }
-
-#workspaces button.visible,
-#workspaces button.visible.active {
-    background-color: @primary;
-    color: @background_original;
-    opacity: 1;
-}
-
 #workspaces button.urgent {
     background-color: @red;
     color: @background_original;
-    opacity: 1;
-}
-
-#workspaces button.special {
-    background-color: alpha(@yellow, 0.5);
-    color: @background_original;
-    opacity: 1;
-}
-/* Hover sobre workspace especial */
-#workspaces button.special:hover {
-    background-color: alpha(@yellow, 0.8);
-    color: @background_original;
-}
-
-#workspaces button.empty {
-    color: alpha(@foreground, 0.5);
-    background-color: transparent;
-    opacity: 0.5;
-}
-/* Hover sobre workspace vacío */
-#workspaces button.empty:hover {
-    color: @foreground;
-    background-color: alpha(@primary, 0.2);
-    opacity: 0.8;
 }
 
 * {
@@ -80,13 +44,8 @@ window#waybar {
 }
 
 #custom-launcher,
-#cpu,
-#memory,
 #workspaces,
-#backlight,
 #clock,
-#temperature,
-#pulseaudio,
 #battery,
 #tray,
 #custom-cpu-power {
@@ -99,19 +58,14 @@ window#waybar {
     border: 2px solid @foreground;
 }
 
+/* --- ESTILOS ESPECÍFICOS Y DE ESTADO --- */
 #custom-launcher {
-    color: @foreground;
     font-size: 12px;
     padding: 1px 8px;
 }
-
-#clock {
-}
-
 #temperature.critical {
     color: @red;
 }
-
 #pulseaudio.muted {
     color: @red;
 }
@@ -124,7 +78,6 @@ window#waybar {
         background-size: 100% 100%;
     }
 }
-
 #battery.charging {
     color: @background_original;
     background-image: linear-gradient(to right, @green, @green);
@@ -135,20 +88,13 @@ window#waybar {
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
-
 #battery.warning {
     color: @yellow;
 }
-
 #battery.critical {
     color: @red;
 }
-
-#battery.full {
-    animation: none;
-    background-image: none;
-    color: @green;
-}
+#battery.full,
 #battery.charging.full {
     animation: none;
     background-image: none;
@@ -158,9 +104,58 @@ window#waybar {
 #tray > .passive {
     -gtk-icon-effect: dim;
 }
-
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
     background-color: @red;
-    border-radius: 6px;
+}
+
+#temperature,
+#pulseaudio {
+    background-color: @background_alt_rgba;
+    border-top: 2px solid @foreground;
+    border-bottom: 2px solid @foreground;
+    border-left: none;
+    border-right: none;
+    margin: 2px 0;
+    min-height: 12px;
+}
+
+#temperature {
+    padding: 1px 6px 1px 12px;
+    border-left: 2px solid @foreground;
+    border-radius: 10px 0 0 10px;
+}
+
+#pulseaudio {
+    padding: 1px 12px 1px 6px;
+    border-right: 2px solid @foreground;
+    border-radius: 0 10px 10px 0;
+}
+
+#cpu,
+#memory,
+#backlight {
+    background-color: @background_alt_rgba;
+    border-top: 2px solid @foreground;
+    border-bottom: 2px solid @foreground;
+    border-left: none;
+    border-right: none;
+    margin: 2px 0;
+    min-height: 12px;
+}
+
+#cpu {
+    padding: 1px 6px 1px 12px;
+    border-left: 2px solid @foreground;
+    border-radius: 10px 0 0 10px;
+}
+
+#memory {
+    padding: 1px 6px;
+}
+
+#backlight {
+    padding: 1px 12px 1px 6px;
+    border-right: 2px solid @foreground;
+    border-radius: 0 10px 10px 0;
 }
